@@ -3,9 +3,10 @@ import Data.List
 -- import Data.List hiding (nub)   -- import all functions except the selected ones
 import qualified Data.Map  --  if we want to reference Data.Map's filter function, we have to do Data.Map.filter
     -- whereas just filter still refers to the normal filter from 'Prelude' module
-import qualified Data.Map as M  --  to reference Data.Map's filter function, we just use M.filter
+import qualified Data.Map as Map  --  to reference Data.Map's filter function, we just use M.filter
 import Data.Function (on)
 import Data.Char (ord, chr)
+import qualified Data.Set as Set
 
 numUniques :: (Eq a) => [a] -> Int  
 numUniques = length . nub -- \xs -> length (nub xs) .. 'nub' is a function that takes in a list and weeds out duplicates
@@ -69,5 +70,23 @@ ceaserCipher :: Int -> String -> String
 ceaserCipher key msg = map chr $ map (+key) $ map ord msg
 
 -- ******** Data.Map
+-- Association Lists / Maps / Dictionaries are used to store key value pairs where ordering doesn't matter (unlike sets)
+-- Data.Map exports functions that clash with the Prelude and Data.List ones, we'll do a qualified import.
+-- import qualified Data.Map as Map  
+
+-- ** The fromList function takes an association list (in the form of a list) and returns a map with the same associations.
+-- Type signature ... Map.fromList :: (Ord k) => [(k, v)] -> Map.Map k v 
+mapExample1 = Map.fromList [(1,2),(3,4),(3,2),(5,5)] -- fromList [(1,2),(3,2),(5,5)]
+mapExample3 = Map.fromList [("betty","555-2938"),("bonnie","452-2928"),("lucille","205-2928")] 
+mapExample2 = Map.fromList [(1,"One"),(2,"Two"),(3,"Three"),(3,"Number Three")] -- The second '3' is discarded 
+-- If there are duplicate keys in the original association list, the duplicates are just discarded. This is the type signature of
 
 
+-- ************ Data.Set
+--  All the elements in a set are unique and ordered.
+-- Because the names in Data.Set clash with a lot of Prelude and Data.List names, we do a qualified import.
+-- import qualified Data.Set as Set
+
+-- The fromList function takes a list and converts it into a set.
+listToSet = "The old man left his garbage can out and now his trash is all over my lawn!"
+setExample1 = Set.fromList listToSet -- fromList " !Tabcdefghilmnorstuvwy"

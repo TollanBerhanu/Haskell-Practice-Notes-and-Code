@@ -202,3 +202,89 @@ searchTree x (Node a left right)
     | x < a = searchTree x left
     | x > a = searchTree x right
  
+ -- ** Making your own typeclasses and type instances
+{- class Eq' a where  
+    (==) :: a -> a -> Bool  
+    (/=) :: a -> a -> Bool  
+    x == y = not (x /= y)  
+    x /= y = not (x == y)  -} 
+
+data TrafficLight = Red | Yellow | Green
+
+instance Show TrafficLight where  
+    show Red = "Red light"  
+    show Yellow = "Yellow light"  
+    show Green = "Green light"  
+showRed = show Red 
+
+-- ** The Yes-No typeclass
+-- Let's create a new typeclass with javascript like behavior ... (0, "", false) == False and the rest is True
+
+-- Declaring a new Typeclass
+class YesNo a where -- The typeclass can have an instance of type 'a'
+    yesno :: a -> Bool -- It always returna a Bool value
+
+-- Defining some instances 
+instance YesNo Int where
+    yesno 0 = False
+    yesno _ = True -- YesNo will be True for all Int except 0
+instance YesNo [a] where
+    yesno [] = False
+    yesno _ = True
+instance YesNo Bool where
+    yesno = id -- 'id' is just a standard library function that takes a parameter and returns the same thing
+instance YesNo (Maybe a) where
+    yesno Nothing = False
+    yesno (Just _) = True
+instance YesNo (Tree a) where
+    yesno EmptyTree = False
+    yesno _ = True
+instance YesNo TrafficLight where  
+    yesno Red = False  
+    yesno _ = True
+-- Now we can use the typeclass we defined
+yesNoExample1 = yesno (0 :: Int) -- False ... 0 is ambiguous
+yesNoExample2 = yesno [] -- False
+yesNoExample3 = yesno Nothing -- False
+yesNoExample4 = yesno EmptyTree -- False
+yesNoExample5 = yesno Green -- True
+
+-- ** Now lets make a yesno if function with the YesNo typeclass
+yesnoIf :: (YesNo yn) => yn -> a -> a -> a
+yesnoIf cond yesVal noVal= if yesno cond then yesVal else noVal
+
+yesnoIfExample1 = yesnoIf [] "Not Empty" "Empty"
+yesnoIfExample2 = yesnoIf (Just 1) "Not Empty" "Empty"
+
+
+-- ******* Functor typeclasses - have properties that can be mapped over (like - List, Maybe, Tree)
+-- Types that can act like a box can be functors. You can think of a list as a box. Also, the Maybe a type in a way,
+-- it's like a box that can either hold nothing or Just something. A tree can also be a functor
+{- instance Functor [] where  
+    fmap = map 
+instance Functor Maybe where  
+    fmap f (Just x) = Just (f x)  
+    fmap f Nothing = Nothing -}
+-- fmap for tree isn't previously defined
+instance Functor Tree where  
+    fmap f EmptyTree = EmptyTree  
+    fmap f (Node x leftsub rightsub) = Node (f x) (fmap f leftsub) (fmap f rightsub)   
+
+myFmappedList = fmap (*2) [1..3]  
+
+myFmappedMaybe1 = fmap (+2) Nothing -- Nothing
+myFmappedMaybe2 = fmap (+2) $ Just 3 -- Just 5
+
+myFmappedTree1 = fmap (*2) EmptyTree -- EmptyTree
+myFmappedTree2 = fmap (*2) $ foldr insertToTree EmptyTree [8,6,4,1,7,3,5] -- Node 10 (Node 6 (Node 2 EmptyTree EmptyTree) (Node 8 EmptyTree EmptyTree)) (Node 14 (Node 12 EmptyTree EmptyTree) (Node 16 EmptyTree EmptyTree))
+
+-- ** Can Either a b be made a functor? The Functor typeclass wants a type constructor that takes only one type paramete
+-- but Either takes two, so we can partially apply Either by feeding it only one parameter so that it has one free parameter
+instance Functor (Either' a) where  
+    fmap f (Right' x) = Right' (f x)  
+    fmap f (Left' x) = Left' x  
+-- The type signature would then be (b -> c) -> Either a b -> Either a c
+
+
+-- ** NOTE: Maps from Data.Map can also be made a functor because they hold values (or not!). In the case of Map k v,
+-- fmap will map a function v -> v' over a map of type Map k v and return a map of type Map k v'.
