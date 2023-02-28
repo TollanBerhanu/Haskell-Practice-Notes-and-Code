@@ -1,3 +1,4 @@
+-- ********** Modules
 import Data.List
 -- import Data.List (nub, sort) -- import some specific functions
 -- import Data.List hiding (nub)   -- import all functions except the selected ones
