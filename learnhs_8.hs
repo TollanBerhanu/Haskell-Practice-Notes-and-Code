@@ -20,7 +20,7 @@ data Shape1 = Circle1 Float Float Float deriving (Show) -- Now we can do Circle1
 sameCoordCircles = map (Circle1 10 15) [12, 23, 34] -- [Circle1 10.0 15.0 12.0, Circle1 10.0 15.0 23.0, Circle1 10.0 15.0 34.0]
 
 -- ** Let's create another datatype to make our shape more understandable
-data Point = Point Float Float deriving (Show)  -- it's common to use the same name for the data type and value constructor if there is only one valus constructor
+data Point = Point Float Float deriving (Show)  -- it's common to use the same name for the data type and value constructor if there is only one value constructor
 data Shape3 = Circle3 Point Float | Rectangle3 Point Point deriving (Show) 
 area3 :: Shape3 -> Float
 area3 (Circle3 _ r) = pi * r^2
@@ -140,7 +140,7 @@ checkPhonebook name pno pbook = (name, pno) `elem` pbook
 -- but still want it to be general so it can use any type as the keys and values, we can do this:
 type AssocList key val = [(key, val)]
 assocListExample = [(1,"One"),(2,"Two")] :: AssocList Int String
--- ** Just like finctions, we can partially apply type parameters and get new type constructors from them
+-- ** Just like functions, we can partially apply type parameters and get new type constructors from them
 -- myDataMap = Map.Map Int String ... general syntax for Data.Map
 type IntMap val = Map.Map Int val -- Or we can do this ... type IntMap = Map.Map Int (partially applied type param)
 
